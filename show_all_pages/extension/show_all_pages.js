@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2012-04-19
+ * @author Ralf Haring 2012-05-03
  */
 
 // tons of comments to find my way if/when the G+ class names change
@@ -37,9 +37,10 @@ $(document).ready(function(){
             // replace() = chop the protocal and domain
             var link = $(this).find('.t7SApd').prop('href').replace('https://plus.google.com', '');
 
-            // .kMQ7Yd.eNVk8e.k-Qf-C-RySO6d = the last hovercard entry (eNVk8e is the real determinant)
+            // .kMQ7Yd.k-Qf-C-RySO6d = the hovercard entries
             // a[href^="/u/0/b"] = only those that link to brand pages
-            var lastHoverEntry = $('.kMQ7Yd.eNVk8e.k-Qf-C-RySO6d').filter('a[href^="/u/0/b"]');
+            // .last() = no way to determine which is which from class data
+            var lastHoverEntry = $('.kMQ7Yd.k-Qf-C-RySO6d').filter('a[href^="/u/0/b"]').last();
 
             // make copy to hold new info and populate it
             var newHoverEntry = lastHoverEntry.clone();
@@ -49,9 +50,6 @@ $(document).ready(function(){
 
             // insert it before the current last hover entry
             newHoverEntry.insertAfter(lastHoverEntry);
-            // delete the previous "last entry" class signifier since
-            // the new one is now the last entry
-            lastHoverEntry.removeClass('eNVk8e');
         });
     }, 'html');
 });
