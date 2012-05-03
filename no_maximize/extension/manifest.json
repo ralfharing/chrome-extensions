@@ -1,0 +1,11 @@
+{
+  "name": "G+ Lightbox - Hide Maximize Icon",
+  "version": "1.0",
+  "description": "The G+ lightbox contains a maximize icon that obscures the image and never completely fades out.",
+  "content_scripts": [
+    {
+      "matches": ["https://plus.google.com/*"],
+      "css": ["mystyles.css"]
+    }
+  ]
+}

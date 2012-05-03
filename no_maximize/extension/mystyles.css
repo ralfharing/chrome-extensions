@@ -1,0 +1,7 @@
+.cbgUc {
+  opacity: 0 !important;
+}
+
+.cbgUc:hover {
+  opacity: 0.5 !important;
+}
