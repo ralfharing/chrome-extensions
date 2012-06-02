@@ -12,11 +12,11 @@ $(document).ready(function(){
         // On profile these will be the first three, but if you
         // are a page it will be the page plus the first two.
         //
-        // .JUa.h-q-o-ca = the <a> hover elements (among others)
+        // .JUa = the <a> hover elements (among others)
         // a[href^="/u/0/b"] = only those that link to brand pages
         // contents() = <img> and text nodes for each
         // .filter(nodeType = 3) = only the text nodes
-        var existingHoverEntries = $('.JUa.h-q-o-ca').filter('a[href^="/u/0/b"]').contents().filter(function(){return(this.nodeType == 3);});
+        var existingHoverEntries = $('.JUa').filter('a[href^="/u/0/b"]').contents().filter(function(){return(this.nodeType == 3);});
 
         // convert text nodes to strings
         $.each(existingHoverEntries, function(index, val){existingHoverEntries[index] = val.nodeValue;})
@@ -38,10 +38,10 @@ $(document).ready(function(){
             // replace() = chop the protocal and domain
             var link = $(this).find('.HBb').prop('href').replace('https://plus.google.com', '');
 
-            // .JUa.h-q-o-ca = the hovercard entries
+            // .JUa = the hovercard entries
             // a[href^="/u/0/b"] = only those that link to brand pages
             // .last() = no way to determine which is which from class data
-            var lastHoverEntry = $('.JUa.h-q-o-ca').filter('a[href^="/u/0/b"]').last();
+            var lastHoverEntry = $('.JUa').filter('a[href^="/u/0/b"]').last();
 
             // make copy to hold new info and populate it
             var newHoverEntry = lastHoverEntry.clone();
