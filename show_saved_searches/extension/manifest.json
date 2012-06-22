@@ -1,11 +1,11 @@
 {
   "name": "G+ Show Saved Searches",
-  "version": "1.1",
+  "version": "1.2",
   "description": "The G+ main page would be slightly more useful if the saved searches were available right above the trending topics.",
   "content_scripts": [
     {
       "js": ["jquery-1.7.2.min.js", "show_saved_searches.js"],
-      "matches": ["https://plus.google.com/"],
+      "matches": ["https://plus.google.com/", "https://plus.google.com/u/0/"],
       "run_at": "document_idle"
     }
   ]
