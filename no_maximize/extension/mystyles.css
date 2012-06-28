@@ -1,7 +1,7 @@
-.kI {
+.SH {
   opacity: 0 !important;
 }
 
-.kI:hover {
+.SH:hover {
   opacity: 0.5 !important;
 }
