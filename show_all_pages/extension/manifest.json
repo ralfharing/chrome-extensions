@@ -1,7 +1,8 @@
 {
   "name": "G+ Show All Pages",
-  "version": "1.5",
+  "version": "1.6",
   "description": "The G+ tab strip contains a Pages button. Only three of a user's pages are accessible when you hover over this button.",
+  "manifest_version": 2,
   "content_scripts": [
     {
       "js": ["jquery-1.7.2.min.js", "show_all_pages.js"],

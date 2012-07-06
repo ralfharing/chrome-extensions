@@ -4,8 +4,7 @@
 
 // tons of comments to find my way if/when the G+ class names change
 
-// wait until page is fully loaded
-$(document).ready(function(){
+var doWork = function(){
     // make a call to the page that lists all the pages
     $.get('https://plus.google.com/u/0/pages/manage', function(data){
         // Get the three existing entries on the hovercard.
@@ -54,4 +53,29 @@ $(document).ready(function(){
             newHoverEntry.insertAfter(lastHoverEntry);
         });
     }, 'html');
+};
+
+// wait until page is fully loaded
+$(document).ready(function(){
+    doWork();
 });
+
+// navid="7" is the pages button on the left sidebar
+var pagesButton = document.querySelector('div[navid="7"]').firstChild.firstChild.firstChild;
+
+// create an observer who will watch for modifications of the pages button
+// Pm in the class list = the button is the active button
+// Aj in the class list = the button is being hovered over
+var observer = new WebKitMutationObserver(function(mutations){
+    var classes = mutations[0].target.className;
+    if(classes.indexOf('Aj') != -1){
+        // if hover entry popup box has exactly the limit
+        // less and it's fine, more and we've already done this
+        if($('.aJa').filter('a[href*="/b/"]').contents().filter(function(){return(this.nodeType == 3);}).length == 3){
+            doWork();
+        }
+    }
+});
+
+// watch for attribute level changes
+observer.observe(pagesButton, {attributes: true});
