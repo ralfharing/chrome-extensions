@@ -5,10 +5,14 @@
 var doWork = function(){
     // if componentid="18" (saved search box) doesn't already exist
     if(!document.querySelector('div[componentid="18"]')){
+        // insert dummy empty div to ward off later calls that might
+        // come in before we've finished setting up the real
+        // saved search div
+        $('<div componentid="18"></div>').insertBefore('div[componentid=13]');
         // make a call to the explore page that lists the saved searches
         $.get('https://plus.google.com/u/0/explore', function(data){
             // copy the searches div onto the main page before the trending topics
-            $('div[componentid=18]', data).insertBefore('div[componentid=13]');
+            $('div[componentid=18]', data).replaceAll('div[componentid=18]');
             // the search elements are "buttons" of some sort instead of links
             // so need some post-processing
             $('div[componentid=18] span[role="button"]').each(function(){
@@ -36,11 +40,16 @@ var homeButton = document.querySelector('div[navid="1"]').firstChild.firstChild.
 // Aj in the class list = the button is being hovered over
 var observer = new WebKitMutationObserver(function(mutations){
     var classes = mutations[0].target.className;
-    if(classes.indexOf('Pm') != -1){
-        // wait for the rest of the page to be constructed before
-        // trying to insert saved searches
-        setTimeout(doWork, 1000);
-   }
+//    if(classes.indexOf('Pm') != -1){
+//        console.log('classes ' + classes + '     oldClasses ' + oldClasses);
+//        if(oldClasses.indexOf('Aj') == -1){
+            // wait a second for the rest of page to be
+            // constructed before trying to insert saved searches
+            setTimeout(doWork, 1000);
+//            setTimeout(doWork, Math.floor(Math.random() * 10000));
+//            doWork();
+//        }
+//   }
 });
 
 // watch for attribute level changes
