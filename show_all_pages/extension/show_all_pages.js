@@ -5,60 +5,51 @@
 // tons of comments to find my way if/when the G+ class names change
 
 var doWork = function(){
-    // make a call to the page that lists all the pages
-    $.get('https://plus.google.com/u/0/pages/manage', function(data){
-        // Get the three existing entries on the hovercard.
-        // On profile these will be the first three, but if you
-        // are a page it will be the page plus the first two.
-        //
-        // .aJa = the <a> hover elements (among others)
+    // Get the three existing entries on the hovercard.
+    // On profile these will be the first three, but if you
+    // are a page it will be the page plus the first two.
+    //
+    // .aJa = the <a> hover elements (among others)
+    // a[href*="/b/"] = only those that contain link to brand pages
+    // contents() = <img> and text nodes for each
+    // .filter(nodeType = 3) = only the text nodes
+    var existingHoverEntries = $('.aJa').filter('a[href*="/b/"]').contents().filter(function(){return(this.nodeType == 3);});
+
+    // convert text nodes to strings
+    $.each(existingHoverEntries, function(index, val){existingHoverEntries[index] = val.nodeValue;})
+
+    // #gbmpas = the account dropdown in the toolbar
+    // .gbmtc:gt(0) = each page entry minus the first which is the user
+    $('#gbmpas > .gbmtc:gt(0)').each(function(){
+        // .gbps = div with the name
+        var name = $(this).find('.gbps').text();
+        // if the name is already on the hovercard, do nothing
+        if($.inArray(name, existingHoverEntries) != -1) return;
+
+        // .gbmpia = img tag with picture
+        // src = only the src property
+        // replace(.s32) = insert url path to get small thumbnails
+        var thumbnail = $(this).find('.gbmpia').prop('src').replace('photo.jpg', 's32-c-k/photo.jpg');
+        // .gbmt = a tag with the page link
+        // href = only the href property
+        var link = $(this).find('.gbmt').prop('href');
+
+        // .aJa = the hovercard entries
         // a[href*="/b/"] = only those that contain link to brand pages
-        // contents() = <img> and text nodes for each
-        // .filter(nodeType = 3) = only the text nodes
-        var existingHoverEntries = $('.aJa').filter('a[href*="/b/"]').contents().filter(function(){return(this.nodeType == 3);});
+        // .last() = no way to determine which is which from class data
+        var lastHoverEntry = $('.aJa').filter('a[href*="/b/"]').last();
 
-        // convert text nodes to strings
-        $.each(existingHoverEntries, function(index, val){existingHoverEntries[index] = val.nodeValue;})
+        // make copy to hold new info and populate it
+        // .Zb.AWa = img tag with the hover entry thumbnail
+        var newHoverEntry = lastHoverEntry.clone();
+        newHoverEntry.contents().last().replaceWith(name)
+        newHoverEntry.prop('href', link);
+        newHoverEntry.find('.Zb.AWa').prop('src', thumbnail);
 
-        // .OYb.a-f-e.YOb = a page entry on the management page
-        $('.OYb.a-f-e.YOb', data).each(function(){
-            // .Ira = div with the name
-            var name = $(this).find('.Ira').text();
-            // if the name is already on the hovercard, do nothing
-            if($.inArray(name, existingHoverEntries) != -1) return;
-
-            // .l-tk.Rf = img tag with big picture
-            // src = only the src property
-            // replace(.s102) = get small thumbnails
-            // replace(https) = chop the protocol
-            var thumbnail = $(this).find('.l-tk.Rf').prop('src').replace('s102-c-k', 's32-c-k').replace('https:', '');
-            // .MYb = a tag with the page link
-            // href = only the href property
-            // replace() = chop the protocal and domain
-            var link = $(this).find('.MYb').prop('href').replace('https://plus.google.com', '');
-
-            // .aJa = the hovercard entries
-            // a[href*="/b/"] = only those that contain link to brand pages
-            // .last() = no way to determine which is which from class data
-            var lastHoverEntry = $('.aJa').filter('a[href*="/b/"]').last();
-
-            // make copy to hold new info and populate it
-            // .Zb.AWa = img tag with the hover entry thumbnail
-            var newHoverEntry = lastHoverEntry.clone();
-            newHoverEntry.contents().last().replaceWith(name)
-            newHoverEntry.prop('href', link);
-            newHoverEntry.find('.Zb.AWa').prop('src', thumbnail);
-
-            // insert it before the current last hover entry
-            newHoverEntry.insertAfter(lastHoverEntry);
-        });
-    }, 'html');
+        // insert it before the current last hover entry
+        newHoverEntry.insertAfter(lastHoverEntry);
+    });
 };
-
-// wait until page is fully loaded
-$(document).ready(function(){
-    doWork();
-});
 
 // navid="7" is the pages button on the left sidebar
 var pagesButton = document.querySelector('div[navid="7"]').firstChild.firstChild.firstChild;
@@ -69,7 +60,7 @@ var pagesButton = document.querySelector('div[navid="7"]').firstChild.firstChild
 var observer = new WebKitMutationObserver(function(mutations){
     var classes = mutations[0].target.className;
     if(classes.indexOf('Aj') != -1){
-        // if hover entry popup box has exactly the limit
+        // if hover entry popup box has exactly the normal limit
         // less and it's fine, more and we've already done this
         if($('.aJa').filter('a[href*="/b/"]').contents().filter(function(){return(this.nodeType == 3);}).length == 3){
             doWork();
