@@ -1,0 +1,13 @@
+{
+  "name": "De-Instant Mix Google Music",
+  "version": "1.0",
+  "description": "Google Music includes auto-generated Instant Mix playlists that cannot be removed.",
+  "manifest_version": 2,
+  "content_scripts": [
+    {
+      "js": ["jquery-1.9.1.min.js", "de_instant_mix.js"],
+      "matches": ["https://play.google.com/music/*"],
+      "run_at": "document_idle"
+    }
+  ]
+}
