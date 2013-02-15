@@ -1,0 +1,12 @@
+.hide_button {
+  float: right;
+  margin: 18px 10px 0 0;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/hide_button.png');
+  height: 9px;
+  width:  9px;
+}
+
+.hide_button:hover {
+  background-position-x: -9px;
+  cursor: pointer;
+}
