@@ -25,7 +25,7 @@ var str = {
 };
 
 // number of days after which to purge the hide record from chrome.storage
-var daysToRetain = 7;
+var daysToRetain = 4;
 
 // container for all the posts
 var content_pane = $(str.contentPane)[0];

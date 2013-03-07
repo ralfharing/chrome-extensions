@@ -1,6 +1,6 @@
 {
   "name": "G+ Show All Pages",
-  "version": "1.7",
+  "version": "1.8.1",
   "description": "The G+ tab strip contains a Pages button. Only three of a user's pages are accessible when you hover over this button.",
   "manifest_version": 2,
   "content_scripts": [
@@ -9,5 +9,10 @@
       "matches": ["https://plus.google.com/*"],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "icons": {
+    "128": "icon_128.png",
+    "48": "icon_48.png",
+    "16": "icon_16.png"
+  }
 }
