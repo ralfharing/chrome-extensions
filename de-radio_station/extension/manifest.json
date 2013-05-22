@@ -1,6 +1,6 @@
 {
   "name": "De-Radio Station Google Music",
-  "version": "1.2",
+  "version": "1.2.1",
   "description": "Google Music includes auto-generated Radio Station playlists that cannot be removed.",
   "manifest_version": 2,
   "content_scripts": [
