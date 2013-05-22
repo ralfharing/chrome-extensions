@@ -1,11 +1,11 @@
 {
-  "name": "De-Instant Mix Google Music",
-  "version": "1.1.2",
-  "description": "Google Music includes auto-generated Instant Mix playlists that cannot be removed.",
+  "name": "De-Radio Station Google Music",
+  "version": "1.2",
+  "description": "Google Music includes auto-generated Radio Station playlists that cannot be removed.",
   "manifest_version": 2,
   "content_scripts": [
     {
-      "js": ["jquery-1.9.1.min.js", "de_instant_mix.js"],
+      "js": ["jquery-1.9.1.min.js", "de-radio_station.js"],
       "matches": ["https://play.google.com/music/*"],
       "run_at": "document_idle"
     }
