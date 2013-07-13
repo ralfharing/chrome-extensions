@@ -1,30 +1,46 @@
 /**
- * @author Ralf Haring 2012-05-07
+ * @author Ralf Haring 2012-07-12
  */
 
 var doWork = function(){
-    // if componentid="18" (saved search box) doesn't already exist
-    if(!document.querySelector('div[componentid="18"]')){
-        // insert dummy empty div to ward off later calls that might
-        // come in before we've finished setting up the real
-        // saved search div
-        $('<div componentid="18"></div>').insertBefore('div[componentid=13]');
-        // make a call to the explore page that lists the saved searches
-        $.get('https://plus.google.com/u/0/explore', function(data){
-            // copy the searches div onto the main page before the trending topics
-            $('div[componentid=18]', data).replaceAll('div[componentid=18]');
-            // the search elements are "buttons" of some sort instead of links
-            // so need some post-processing
-            $('div[componentid=18] span[role="button"]').each(function(){
-                // copy the first trending topic and modify the elements
-                var linkTemplate = $('div[componentid=13] li[rowindex=0] a').clone();
-                var searchTerm = $(this).text();
-                linkTemplate.contents().replaceWith(searchTerm);
-                linkTemplate.prop('href', 's/' + searchTerm.replace('#', '%23') + '/posts');
-                $(this).replaceWith(linkTemplate);
-            });
-        }, 'html');
+    // searches are only present at first in a script tag
+    // parse it to get human readable text and create hrefs
+
+    // strip out newlines and empty array bits that break JSON.parse
+    var searchText = $("script:contains('key: \'23\'')").text().replace(/\n/g, '').replace(/\[,,?\[/g, '[[');
+    // strip out function surrounding everything
+    var startPos = searchText.indexOf('["osi.gc"');
+    searchText = searchText.substr(startPos, searchText.length - startPos - 3);
+    var searchArray = JSON.parse(searchText)[1];
+    var searches = [];
+
+    for(var j=0; j < searchArray.length; j++){
+        // push elements like ["#human readable", "%23human%20readable"]
+        searches.push([searchArray[j][1], encodeURIComponent(searchArray[j][1])]);
     }
+
+    // loop and construct the searches card
+
+    // make card have two columns, so split it for easy adding during loop
+    var firstPart = '<div tabindex="-1" class="gXeWBf"><div class="r6Rtbe NB Om qcY0Mc h0b" role="article"><div class="bS Ym"><h3 class="TP tx hp"><span>Saved Searches</span></h3></div><div class="SP Ov"><div class="Urou4"><div class="S7B4Cc"><ul class="B8 vWa">';
+    var middlePart = '</ul></div></div><div class="Urou4"><div class="uBQ7J"><ul class="B8 vWa">';
+    var lastPart = '</ul></div></div></div></div></div>';
+
+    var emptyRow = '<li class="Ty QK cdb" rowindex="ROW_INDEX"><div class="bja"><div class="aOa Itb"></div><span class="bdb"><a href="s/SEARCH_URL" target="_top" class="a-n FW9qdb Wob" tabindex="0">SEARCH_TEXT</a></span></div><div class="XO"></div></li>';
+
+    for(var i=0; i < searches.length; i++){
+        var newRow = emptyRow.replace('SEARCH_TEXT', searches[i][0]).replace('SEARCH_URL', searches[i][1]).replace('ROW_INDEX', i);
+        if(i < searches.length / 2){
+            firstPart += newRow;
+        }else{
+            middlePart += newRow;
+        }
+    }
+
+    var searchCard = firstPart + middlePart + lastPart;
+
+    // insert after the share card
+    $(searchCard).insertAfter('div[data-iid="sii2:111"]');
 };
 
 // wait until page is fully loaded
@@ -36,20 +52,10 @@ $(document).ready(function(){
 var homeButton = document.querySelector('div[navid="1"]').firstChild.firstChild.firstChild;
 
 // create an observer who will watch for modifications of the home button
-// Pm in the class list = the button is the active button
-// Aj in the class list = the button is being hovered over
 var observer = new WebKitMutationObserver(function(mutations){
-    var classes = mutations[0].target.className;
-//    if(classes.indexOf('Pm') != -1){
-//        console.log('classes ' + classes + '     oldClasses ' + oldClasses);
-//        if(oldClasses.indexOf('Aj') == -1){
-            // wait a second for the rest of page to be
-            // constructed before trying to insert saved searches
-            setTimeout(doWork, 1000);
-//            setTimeout(doWork, Math.floor(Math.random() * 10000));
-//            doWork();
-//        }
-//   }
+    // wait a second for the rest of page to be
+    // constructed before trying to insert saved searches
+    setTimeout(doWork, 1000);
 });
 
 // watch for attribute level changes

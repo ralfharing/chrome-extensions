@@ -1,7 +1,7 @@
 {
   "name": "G+ Show Saved Searches",
-  "version": "1.5.1",
-  "description": "The G+ main page would be slightly more useful if the saved searches were available right above the trending topics.",
+  "version": "1.6",
+  "description": "The G+ main page would be slightly more useful if the saved searches were available on a card right underneath the share card.",
   "manifest_version": 2,
   "content_scripts": [
     {
