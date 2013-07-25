@@ -13,4 +13,4 @@ Obsolete
 --------
 
 * no_maximize - G+ now fully hides the maximize button by default
-* show_all_pages - G+ no longer includes a popup listing the your pages
+* show_all_pages - G+ no longer includes a popup listing a user's pages, so no need for an extension that fully expands that list by default
