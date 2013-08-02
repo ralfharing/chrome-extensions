@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2013-07-15
+ * @author Ralf Haring 2013-08-01
  */
 
 // all the constants in one place
@@ -14,8 +14,8 @@ var str = {
     content_pane : 'div.g-content:last-child',
     listen_now : '#nav_collections li[data-type="now"]',
     loading_screen : '#loading-progress',
-    breadcrumbs : '#breadcrumbs span',
-    device_settings : '.settings-manager-my-device'
+    device_settings : '.settings-manager-my-device',
+    footer : '#settings-footer'
 };
 
 // for user configurations, use sync storage for multiple chrome installs
@@ -84,7 +84,7 @@ var remove_mixes = function(){
                 card_group.clone().append(cards[i]).appendTo(str.content_pane);
             }
         });
-    }else if(this == observer && $(str.breadcrumbs).text() == "Settings"){
+    }else if(this == observer && $(str.footer).length == 1){
         // if the settings page is opened, insert clean up settings
         // between the two "General" and "Manage My Devices" sections
 
