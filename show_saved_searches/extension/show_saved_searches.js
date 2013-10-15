@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2013-07-12
+ * @author Ralf Haring 2013-10-15
  */
 
 var doWork = function(){
@@ -22,11 +22,11 @@ var doWork = function(){
     // loop and construct the searches card
 
     // make card have two columns, so split it for easy adding during loop
-    var firstPart = '<div tabindex="-1" class="Dha"><div class="ge lO Re Tj qs" role="article"><div class="J3 zi"><h3 class="wX Ei tj"><span>Saved Searches</span></h3></div><div class="q2 Lg"><div class="qj"><div class="i2"><ul class="Mw wg">';
-    var middlePart = '</ul></div></div><div class="qj"><div class="j2"><ul class="Mw wg">';
+    var firstPart = '<div tabindex="-1" class="nja"><div class="Ee fP Ue lk Ls" role="article"><div class="a5 Gi"><h3 class="EY Ni zj"><span>Saved Searches</span></h3></div><div class="B3 Kg"><div class="xj"><div class="p3"><ul class="Bx wg">';
+    var middlePart = '</ul></div></div><div class="xj"><div class="q3"><ul class="Bx wg">';
     var lastPart = '</ul></div></div></div></div></div>';
 
-    var emptyRow = '<li class="kz Xi y1" rowindex="ROW_INDEX"><div class="q4 bq"><div class="aYb CRd"></div><span class="so"><a href="s/SEARCH_URL" target="_top" class="d-s lb UPc" tabindex="0">SEARCH_TEXT</a></span></div><div class="rp"></div></li>';
+    var emptyRow = '<li class="Zz fj A2" rowindex="ROW_INDEX"><div class="N5 Mq"><div class="VZb rVd"></div><span class="Jo"><a href="s/SEARCH_URL" target="_top" class="d-s ob FSc" tabindex="0">SEARCH_TEXT</a></span></div><div class="Xp"></div></li>';
 
     for(var i=0; i < searches.length; i++){
         var newRow = emptyRow.replace('SEARCH_TEXT', searches[i][0]).replace('SEARCH_URL', searches[i][1]).replace('ROW_INDEX', i);
