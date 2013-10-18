@@ -1,15 +1,17 @@
 /**
- * @author Ralf Haring 2013-08-01
+ * @author Ralf Haring 2013-10-17
  */
 
 // all the constants in one place
 var str = {
     card : 'div.card',
-    album : 'div[data-type="al"]',
+    album : 'div[data-type="album"]',
     playlist : 'div[data-type="pl"]',
     suggested_album : 'div[data-type="sal"]',
     instant_mix_auto : 'div[data-type="im"]',
     instant_mix_user : 'div[data-type="st"]',
+    im_feeling_lucky : 'div[data-type="imfl"]',
+    im_feeling_lucky_group : 'div.ifl-group',
     small_card_group : 'div.card-group.small:first',
     content_pane : 'div.g-content:last-child',
     listen_now : '#nav_collections li[data-type="now"]',
@@ -41,6 +43,9 @@ var add_listeners = function(){
             case 'show-albums':
                 o['album'] = this.checked;
                 break;
+            case 'show-im-feeling-lucky':
+                o['im_feeling_lucky'] = this.checked;
+                break;
         }
         storage.set(o);
     });
@@ -71,6 +76,9 @@ var remove_mixes = function(){
             if(obj['suggested_album'] == false){
                 $(str.suggested_album).remove();
             }
+            if(obj['im_feeling_lucky'] == false){
+                $(str.im_feeling_lucky).remove();
+            }
 
             // backup all the cards
             cards = $(str.card);
@@ -81,6 +89,20 @@ var remove_mixes = function(){
 
             // repopulate with all relevant small cards
             for(var i = 0; i < cards.length; i++){
+                // make the first card group special if the user wants the I'm Feeling Lucky button
+                if(i < 3 && obj['im_feeling_lucky'] == true){
+                    if(i == 0){
+                        // set up the group and drop in the button (it's always first in the array)
+                        imfl_group = card_group.clone().removeClass('small').addClass('large ifl-group');
+                        imfl_group.append(cards[i]).appendTo(str.content_pane);
+                    }else{
+                        // drop in the next two and make the height just the thumbnail
+                        $(cards[i]).css('height', '160px').appendTo(str.im_feeling_lucky_group);
+                    }
+                    // skip doing the later "normal" resizing
+                    continue;
+                }
+
                 card_group.clone().append(cards[i]).appendTo(str.content_pane);
             }
         });
@@ -102,7 +124,9 @@ var remove_mixes = function(){
             if(obj['instant_mix_user']){ boxes += ' checked'; }
             boxes += '><label for="show-instant-mixes-user">Instant Mixes (User)</label><input id="show-instant-mixes-auto" type="checkbox"';
             if(obj['instant_mix_auto']){ boxes += ' checked'; }
-            boxes += '><label for="show-instant-mixes-auto">Instant Mixes (Auto)</label></div></div></div>';
+            boxes += '><label for="show-instant-mixes-auto">Instant Mixes (Auto)</label><input id="show-im-feeling-lucky" type="checkbox"';
+            if(obj['im_feeling_lucky']){ boxes += ' checked'; }
+            boxes += '><label for="show-im-feeling-lucky">I\'m Feeling Lucky</label></div></div></div>';
 
             // find "Manage My Devices" div and insert before
             $(str.device_settings).before(header);
@@ -117,11 +141,19 @@ var remove_mixes = function(){
 
 // check if storage is empty (first time extension runs, ever) and set defaults
 storage.get('album', function(obj){
-    if(! obj.hasOwnProperty('album')){
-        var settings = {'album' : true, 'suggested_album' : false, 'playlist' : true,
-                        'instant_mix_auto' : false, 'instant_mix_user' : true};
-        storage.set(settings);
+    var settings = {};
+    
+    if(! obj.hasOwnProperty('im_feeling_lucky')){
+        settings['im_feeling_lucky'] = true;
     }
+    if(! obj.hasOwnProperty('album')){
+        settings['album'] = true;
+        settings['suggested_album'] = false;
+        settings['playlist'] = true;
+        settings['instant_mix_auto'] = false;
+        settings['instant_mix_user'] = true;
+    }
+    storage.set(settings);
 });
 
 // container for all albums, instant mixes, and playlists
