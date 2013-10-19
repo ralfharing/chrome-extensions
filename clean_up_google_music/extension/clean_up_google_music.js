@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2013-10-17
+ * @author Ralf Haring 2013-10-19
  */
 
 // all the constants in one place
@@ -11,8 +11,8 @@ var str = {
     instant_mix_auto : 'div[data-type="im"]',
     instant_mix_user : 'div[data-type="st"]',
     im_feeling_lucky : 'div[data-type="imfl"]',
-    im_feeling_lucky_group : 'div.ifl-group',
     small_card_group : 'div.card-group.small:first',
+    card_group : 'div.card-group',
     content_pane : 'div.g-content:last-child',
     listen_now : '#nav_collections li[data-type="now"]',
     loading_screen : '#loading-progress',
@@ -45,6 +45,9 @@ var add_listeners = function(){
                 break;
             case 'show-im-feeling-lucky':
                 o['im_feeling_lucky'] = this.checked;
+                break;
+            case 'resize-cards':
+                o['resize_cards'] = this.checked;
                 break;
         }
         storage.set(o);
@@ -81,29 +84,60 @@ var remove_mixes = function(){
             }
 
             // backup all the cards
-            cards = $(str.card);
-            // backup empty container and change dimensions to hold one album each
-            card_group = $(str.small_card_group).empty().css('height', '255px');
+            var cards = $(str.card).toArray();
+            // backup a small empty container and change dimensions to hold one album each
+            var small_card_group = $(str.small_card_group).clone();
+            $(small_card_group).empty().css('height', '255px');
+            // backup clean copies of all existing containers
+            var card_groups = $(str.card_group).empty().toArray();
             // flush everything that exists
             $(str.content_pane).empty();
 
-            // repopulate with all relevant small cards
-            for(var i = 0; i < cards.length; i++){
-                // make the first card group special if the user wants the I'm Feeling Lucky button
-                if(i < 3 && obj['im_feeling_lucky'] == true){
-                    if(i == 0){
-                        // set up the group and drop in the button (it's always first in the array)
-                        imfl_group = card_group.clone().removeClass('small').addClass('large ifl-group');
-                        imfl_group.append(cards[i]).appendTo(str.content_pane);
-                    }else{
-                        // drop in the next two and make the height just the thumbnail
-                        $(cards[i]).css('height', '160px').appendTo(str.im_feeling_lucky_group);
-                    }
-                    // skip doing the later "normal" resizing
-                    continue;
-                }
+            // deal with the I'm Feeling Lucky container as a one-off first
+            if(obj['im_feeling_lucky'] == true){
+                // pop off the relevant objects
+                var imfl_group = card_groups.shift();
+                var imfl_card = cards.shift();
+                var card1 = cards.shift();
 
-                card_group.clone().append(cards[i]).appendTo(str.content_pane);
+                // if cards are also to be smallified, pop off one more card.
+                // then fix all the attributes as appropriate and append.
+                if(obj['resize_cards'] == true){
+                    $(card1).css('height', '160px');
+                    var card2 = $(cards.shift()).css('height', '160px');
+                    $(imfl_group).css('height', '255px').append(imfl_card).append(card1).append(card2).appendTo(str.content_pane);
+                }else{
+                    $(card1).removeClass('small').addClass('large');
+                    $(imfl_group).append(imfl_card).append(card1).appendTo(str.content_pane);
+                }
+            }else{
+                // chop off the ifl-group class for the case where we don't want to show it
+                // and we don't want to smallify the cards. (if smallifying, the card_groups
+                // array is ignored)
+                $(card_groups[0]).removeClass('ifl-group');
+            }
+
+            // loop through different arrays depending on whether cards should be smallified.
+            // if yes, for each card wrap a small card group around it and append.
+            // else, for each existing card group, pop off relevant cards and fix them, then append.
+            if(obj['resize_cards'] == true){
+                while(cards.length > 0){
+                    small_card_group.clone().append(cards.shift()).appendTo(str.content_pane);
+                }
+            }else{
+                while(card_groups.length > 0){
+                    // don't bother looping through all groups if no cards left
+                    if(cards.length == 0) break;
+                    var card_group = card_groups.shift();
+                    var card1 = cards.shift();
+                    if($(card_group).hasClass('large')){
+                        $(card1).removeClass('small').addClass('large');
+                        $(card_group).append(card1).appendTo(str.content_pane);
+                    }else{
+                        var card2 = cards.shift();
+                        $(card_group).append(card1).append(card2).appendTo(str.content_pane);
+                    }
+                }
             }
         });
     }else if(this == observer && $(str.footer).length == 1){
@@ -126,7 +160,9 @@ var remove_mixes = function(){
             if(obj['instant_mix_auto']){ boxes += ' checked'; }
             boxes += '><label for="show-instant-mixes-auto">Instant Mixes (Auto)</label><input id="show-im-feeling-lucky" type="checkbox"';
             if(obj['im_feeling_lucky']){ boxes += ' checked'; }
-            boxes += '><label for="show-im-feeling-lucky">I\'m Feeling Lucky</label></div></div></div>';
+            boxes += '><label for="show-im-feeling-lucky">I\'m Feeling Lucky</label></div><div><input id="resize-cards" type="checkbox"';
+            if(obj['resize_cards']){ boxes += ' checked'; }
+            boxes += '><label for="resize-cards">Resize All Cards to be Small</label></div></div></div>';
 
             // find "Manage My Devices" div and insert before
             $(str.device_settings).before(header);
@@ -142,7 +178,10 @@ var remove_mixes = function(){
 // check if storage is empty (first time extension runs, ever) and set defaults
 storage.get('album', function(obj){
     var settings = {};
-    
+
+    if(! obj.hasOwnProperty('resize_cards')){
+        settings['resize_cards'] = true;
+    }
     if(! obj.hasOwnProperty('im_feeling_lucky')){
         settings['im_feeling_lucky'] = true;
     }
