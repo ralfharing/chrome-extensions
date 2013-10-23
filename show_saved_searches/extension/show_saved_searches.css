@@ -1,0 +1,19 @@
+.delete_button {
+  float: right;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/buttons.png');
+  height: 11px;
+  width: 11px;
+  background-position-x: -5px;
+  visibility: hidden;
+}
+
+.delete_button:hover {
+  cursor: pointer;
+  background-position-x: -16px;
+}
+
+/* temporarily comment so delete button never shows
+.search_item:hover .delete_button{
+  visibility: visible;
+}
+*/

@@ -1,21 +1,20 @@
 /**
- * @author Ralf Haring 2013-10-20
+ * @author Ralf Haring 2013-10-22
  */
 
 var storage = chrome.storage.sync;
 
 // TODO: add method of saving new searches
-// TODO: add method of removing saved searches
 
 function makeSearchCard(searches){
     // loop and construct the searches card in the G+ main stream
 
     // make card have two columns, so split it for easy adding during loop
-    var firstPart = '<div tabindex="-1" class="nja"><div class="Ee fP Ue lk Ls" role="article"><div class="a5 Gi"><h3 class="EY Ni zj"><span>Saved Searches</span></h3></div><div class="B3 Kg"><div class="xj"><div class="p3"><ul class="Bx wg">';
+    var firstPart = '<div tabindex="-1" class="nja"><div class="Ee fP Ue lk Ls" role="article"><div class="a5 Gi"><h3 class="EY Ni zj"><span>Saved Searches</span></h3></div><div class="B3 Kg" id="saved_searches"><div class="xj"><div class="p3"><ul class="Bx wg">';
     var middlePart = '</ul></div></div><div class="xj"><div class="q3"><ul class="Bx wg">';
     var lastPart = '</ul></div></div></div></div></div>';
 
-    var emptyRow = '<li class="Zz fj A2" rowindex="ROW_INDEX"><div class="N5 Mq"><div class="VZb rVd"></div><span class="Jo"><a href="s/SEARCH_URL" target="_top" class="d-s ob FSc" tabindex="0">SEARCH_TEXT</a></span></div><div class="Xp"></div></li>';
+    var emptyRow = '<li class="Zz fj A2" rowindex="ROW_INDEX"><div class="N5 Mq"><div class="VZb rVd"></div><span class="Jo search_item"><a href="s/SEARCH_URL" target="_top" class="d-s ob FSc" tabindex="0">SEARCH_TEXT</a><span role="button" class="delete_button"></span></span></div><div class="Xp"></div></li>';
 
     for(var i=0; i < searches.length; i++){
         var newRow = emptyRow.replace('SEARCH_TEXT', searches[i][0]).replace('SEARCH_URL', searches[i][1]).replace('ROW_INDEX', i);
@@ -29,6 +28,14 @@ function makeSearchCard(searches){
     var searchCard = firstPart + middlePart + lastPart;
     // insert after the share card
     $(searchCard).insertAfter('div[data-iid="sii2:111"]');
+
+    // add listeners for the buttons which delete the appropriate search <li>
+    // elements as well as remove them from chrome.storage
+    $('#saved_searches').on('click', 'span.delete_button', function(event){
+        var search_term = this.previousSibling.text;
+        $(this.parentNode.parentNode.parentNode).remove();
+        storage.remove(search_term);
+    });
 }
 
 var doWork = function(){
@@ -43,6 +50,7 @@ var doWork = function(){
     // on 15 November 2013 when Google turns off saved searches, the above script
     // tag presumably won't exist anymore. in that case, retrieve the saved
     // searches from chrome.storage instead.
+//    searchText = "";
     if(searchText == ""){
         storage.get(null, function(obj){
             var stored_searches = [];
