@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2013-10-19
+ * @author Ralf Haring 2013-10-23
  */
 
 // all the constants in one place
@@ -148,7 +148,7 @@ var remove_mixes = function(){
             // clean up header
             var header = '<div class="settings-section-header settings-clean-up"><div class="settings-title">Clean Up [Instant Mix/Radio Station]</div></div>';
             // iterate through current settings and set checkbox defaults
-            var boxes = '<div class="settings-section-content" id="clean-up"><div class="buttons-section"><div><input id="show-albums" type="checkbox"';
+            var boxes = '<div class="settings-section-content" id="clean-up"><div class="buttons-section"><span class="settings-button-description">Check off the card types you wish to see</span><div><input id="show-albums" type="checkbox"';
             if(obj['album']){ boxes += ' checked'; }
             boxes += '><label for="show-albums">Albums</label><input id="show-playlists" type="checkbox"';
             if(obj['playlist']){ boxes += ' checked'; }
@@ -160,7 +160,7 @@ var remove_mixes = function(){
             if(obj['instant_mix_auto']){ boxes += ' checked'; }
             boxes += '><label for="show-instant-mixes-auto">Instant Mixes (Auto)</label><input id="show-im-feeling-lucky" type="checkbox"';
             if(obj['im_feeling_lucky']){ boxes += ' checked'; }
-            boxes += '><label for="show-im-feeling-lucky">I\'m Feeling Lucky</label></div><div><input id="resize-cards" type="checkbox"';
+            boxes += '><label for="show-im-feeling-lucky">I\'m Feeling Lucky</label></div><span class="settings-button-description">Check off to force all cards to the uniform small size</span><div><input id="resize-cards" type="checkbox"';
             if(obj['resize_cards']){ boxes += ' checked'; }
             boxes += '><label for="resize-cards">Resize All Cards to be Small</label></div></div></div>';
 
