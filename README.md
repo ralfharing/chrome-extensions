@@ -3,6 +3,7 @@ Current
 
 * [clean_up_google_music][1] - Lets the user choose what types of items Google Music displays in the default pane - albums, playlists, suggested albums, user-defined instant mixes/radio stations, and/or auto-suggested instant mixes/radio stations. Also makes every item a uniform, smaller size.
 * [show_saved_searches][2] - Shows the saved searches as a card in the main G+ stream
+* [show_all_pages][5] - G+ no longer includes a popup listing a user's pages, so no need for an extension that fully expands that list by default
 
 In a holding pattern
 --------------------
@@ -13,7 +14,6 @@ Obsolete
 --------
 
 * [no_maximize][4] - G+ now fully hides the maximize button by default
-* [show_all_pages][5] - G+ no longer includes a popup listing a user's pages, so no need for an extension that fully expands that list by default
 
 [1]: https://chrome.google.com/webstore/detail/clean-up-google-music-de/abkfjiemhehhebdlnkjjjgapndfikjdh
 [2]: https://chrome.google.com/webstore/detail/g%20-show-saved-searches/mdaldlaeiaojhpppflfofhfncafhndcf
