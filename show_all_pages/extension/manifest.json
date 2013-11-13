@@ -1,13 +1,12 @@
 {
   "name": "G+ Show All Pages",
-  "version": "1.8.2",
-  "description": "The G+ tab strip contains a Pages button. Only three of a user's pages are accessible when you hover over this button.",
+  "version": "1.9",
+  "description": "The G+ account button is only tall enough to show three of a user's pages. It's height should be increased to show more, reducing the need to scroll in such a small area.",
   "manifest_version": 2,
   "content_scripts": [
     {
-      "js": ["jquery-1.7.2.min.js", "show_all_pages.js"],
-      "matches": ["https://plus.google.com/*"],
-      "run_at": "document_idle"
+      "css": ["show_all_pages.css"],
+      "matches": ["https://plus.google.com/*"]
     }
   ],
   "icons": {
