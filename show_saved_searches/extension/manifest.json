@@ -1,7 +1,7 @@
 {
   "name": "G+ Show Saved Searches",
-  "version": "1.7.2",
-  "description": "The G+ main page would be slightly more useful if the saved searches were available on a card right underneath the share card.",
+  "version": "1.8",
+  "description": "Adds a card on the G+ main page that shows saved searches right underneath the share card.",
   "manifest_version": 2,
   "content_scripts": [{
       "css": ["show_saved_searches.css"],

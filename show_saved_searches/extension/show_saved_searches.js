@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2013-10-28
+ * @author Ralf Haring 2013-11-20
  */
 
 var storage = chrome.storage.sync;
@@ -39,62 +39,24 @@ var parseSearches = function(){
     // array of human readable searches and urlized versions
     var searches = [];
 
-    // searches are only present at first in a script tag.
-    // parse it to get human readable text and create hrefs.
-    // strip out newlines and empty array bits that break JSON.parse.
-    var search_js = $("script:contains('key: \'23\'')").text().replace(/\n/g, '').replace(/\[,,?\[/g, '[[');
-
-    // on 15 November 2013 when Google turns off saved searches, the above script
-    // tag presumably won't exist anymore. in that case, retrieve the saved
-    // searches from chrome.storage instead.
-//    search_js = "";
-    if(search_js == ""){
-        storage.get(null, function(obj){
-            var stored_searches = [];
-            // convert the storage object to an array to sort
-            for(x in obj){
-                stored_searches.push([x, obj[x]]);
-            }
-            // pass in custom sort function for newest-first
-            stored_searches.sort(function(a, b){
-                return b[1] - a[1];
-            });
-            // drop the dates and create the searches array using the search
-            // text and the encoded version for the actual link
-            searches = stored_searches.map(function(y){return [y[0], encodeURIComponent(y[0])]});
-            makeSearchCard(searches);
-        });
-    }else{
-        // strip out function surrounding everything
-        var start_pos = search_js.indexOf('["osi.gc"');
-        search_js = search_js.substr(start_pos, search_js.length - start_pos - 3);
-        var search_array = JSON.parse(search_js)[1];
-        // just the human readable parts for saving to chrome.storage
-        var simple_searches = [];
-
-        for(var j=0; j < search_array.length; j++){
-            // push elements like ["#human readable", "%23human%20readable"]
-            searches.push([search_array[j][1], encodeURIComponent(search_array[j][1])]);
-            simple_searches.push(search_array[j][1]);
+    // retrieve the saved searches from chrome.storage
+    storage.get(null, function(obj){
+        var stored_searches = [];
+        // convert the storage object to an array to sort
+        for(x in obj){
+            stored_searches.push([x, obj[x]]);
         }
-
-        // reverse the array to get the timestamps right, earliest first
-        simple_searches.reverse();
-        storage.get(simple_searches, function(obj){
-            // check if an entry already exists and if not save a new timestamp
-            for(var k=0; k < simple_searches.length; k++){
-//                console.log('checking ' + k + ' ' + simple_searches[k]);
-                var search_term = simple_searches[k];
-                if(! obj.hasOwnProperty(search_term)){
-//                    console.log('saving ' + search_term);
-                    var o = {};
-                    o[search_term] = new Date().valueOf();
-                    storage.set(o);
-                }
-            }
+        // pass in custom sort function for newest-first
+        stored_searches.sort(function(a, b){
+            return b[1] - a[1];
         });
-        makeSearchCard(searches);
-    }
+        // drop the dates and create the searches array using the search
+        // text and the encoded version for the actual link
+        searches = stored_searches.map(function(y){return [y[0], encodeURIComponent(y[0])]});
+        if(searches.length > 0){
+            makeSearchCard(searches);
+        }
+    });
 };
 
 // wait until page is fully loaded
@@ -135,9 +97,8 @@ $('#gbqfq').change(function(){
         $('.save_button').css('visibility', 'hidden');
     }else{
 //        console.log('2 showing save button');
-/* temporarily comment so delete button never shows
         showSaveButton(this.value);
-*/    }
+    }
 });
 
 // when save button is clicked, update chrome.storage and button color
@@ -164,6 +125,5 @@ $('<span role="button" class="save_button"></span>').prependTo('#gbqfqwb').click
 // do initial check on page load
 if($('#gbqfq').val() != ''){
 //    console.log('1 showing save button');
-/* temporarily comment so delete button never shows
     showSaveButton($('#gbqfq').val());
-*/}
+}

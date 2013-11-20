@@ -12,11 +12,9 @@
   background-position-x: -16px;
 }
 
-/* temporarily comment so delete button never shows
 .search_item:hover .delete_button{
   visibility: visible;
 }
-*/
 
 .save_button {
   float: right;
