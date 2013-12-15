@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2013-10-23
+ * @author Ralf Haring 2013-12-14
  */
 
 // all the constants in one place
@@ -16,7 +16,7 @@ var str = {
     content_pane : 'div.g-content:last-child',
     listen_now : '#nav_collections li[data-type="now"]',
     loading_screen : '#loading-progress',
-    device_settings : '.settings-manager-my-device',
+    settings_view : '.settings-view',
     footer : '#settings-footer'
 };
 
@@ -164,9 +164,9 @@ var remove_mixes = function(){
             if(obj['resize_cards']){ boxes += ' checked'; }
             boxes += '><label for="resize-cards">Resize All Cards to be Small</label></div></div></div>';
 
-            // find "Manage My Devices" div and insert before
-            $(str.device_settings).before(header);
-            $(str.device_settings).before(boxes);
+            // find "General" div and insert after
+            var first_settings_section = $($(str.settings_view).children()[1]);
+            first_settings_section.after(boxes).after(header);
         });
 
         // sleep for one second to make sure the nodes are properly there.
