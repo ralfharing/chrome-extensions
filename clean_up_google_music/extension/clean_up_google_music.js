@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2013-12-14
+ * @author Ralf Haring 2014-01-02
  */
 
 // all the constants in one place
@@ -176,7 +176,7 @@ var remove_mixes = function(){
 };
 
 // check if storage is empty (first time extension runs, ever) and set defaults
-storage.get('album', function(obj){
+storage.get(null, function(obj){
     var settings = {};
 
     if(! obj.hasOwnProperty('resize_cards')){
