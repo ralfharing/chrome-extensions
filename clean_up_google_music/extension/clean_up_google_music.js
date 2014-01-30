@@ -1,13 +1,17 @@
 /**
- * @author Ralf Haring 2014-01-02
+ * @author Ralf Haring 2014-01-29
  */
 
 // all the constants in one place
 var str = {
     card : 'div.card',
-    album : 'div[data-type="album"]',
+    // hardcoding English probably breaks localized versions...
+    // still don't know if "sal" has been completely retired...
+    //album : 'div[data-type="album"]',
+    album : 'div[data-type="album"]:not(:contains("Suggested new release"))',
     playlist : 'div[data-type="pl"]',
-    suggested_album : 'div[data-type="sal"]',
+    //suggested_album : 'div[data-type="sal"]',
+    suggested_album : 'div[data-type]:contains("Suggested new release")',
     instant_mix_auto : 'div[data-type="im"]',
     instant_mix_user : 'div[data-type="st"]',
     im_feeling_lucky : 'div[data-type="imfl"]',
