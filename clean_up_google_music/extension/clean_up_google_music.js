@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2014-01-29
+ * @author Ralf Haring 2014-02-23
  */
 
 // all the constants in one place
@@ -150,7 +150,7 @@ var remove_mixes = function(){
 
         storage.get(null, function(obj){
             // clean up header
-            var header = '<div class="settings-section-header settings-clean-up"><div class="settings-title">Clean Up [Instant Mix/Radio Station]</div></div>';
+            var header = '<div class="settings-cluster settings-clean-up"><div class="header"><div class="title">Clean Up [Instant Mix/Radio Station]</div></div></div>';
             // iterate through current settings and set checkbox defaults
             var boxes = '<div class="settings-section-content" id="clean-up"><div class="buttons-section"><span class="settings-button-description">Check off the card types you wish to see</span><div><input id="show-albums" type="checkbox"';
             if(obj['album']){ boxes += ' checked'; }
