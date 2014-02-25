@@ -36,3 +36,12 @@
 .save_button.saved {
   background-position-x: -16px;
 }
+
+.saved_item {
+  border-radius: 50%;
+  background: lightgrey;
+  float: left;
+  height: 12px;
+  width: 12px;
+  margin: 5px 8px 0 0;
+}

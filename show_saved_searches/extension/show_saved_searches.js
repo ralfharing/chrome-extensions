@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2013-11-20
+ * @author Ralf Haring 2014-02-25
  */
 
 var storage = chrome.storage.sync;
@@ -11,7 +11,7 @@ function makeSearchCard(search_terms){
     var middle_part = '</ul></div></div><div class="xj"><div class="q3"><ul class="Bx wg">';
     var last_part = '</ul></div></div></div></div></div>';
 
-    var empty_row = '<li class="Zz fj A2" rowindex="ROW_INDEX"><div class="N5 Mq"><div class="VZb rVd"></div><span class="Jo search_item"><a href="s/SEARCH_URL" target="_top" class="d-s ob FSc" tabindex="0">SEARCH_TEXT</a><span role="button" class="delete_button"></span></span></div><div class="Xp"></div></li>';
+    var empty_row = '<li class="Zz fj A2" rowindex="ROW_INDEX"><div class="N5 Mq"><div class="saved_item"></div><span class="Jo search_item"><a href="s/SEARCH_URL" target="_top" class="d-s ob FSc" tabindex="0">SEARCH_TEXT</a><span role="button" class="delete_button"></span></span></div><div class="Xp"></div></li>';
 
     for(var i=0; i < search_terms.length; i++){
         var new_row = empty_row.replace('SEARCH_TEXT', search_terms[i][0]).replace('SEARCH_URL', search_terms[i][1]).replace('ROW_INDEX', i);

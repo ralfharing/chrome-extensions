@@ -1,6 +1,6 @@
 {
   "name": "G+ Show Saved Searches",
-  "version": "1.8",
+  "version": "1.8.1",
   "description": "Adds a card on the G+ main page that shows saved searches right underneath the share card.",
   "manifest_version": 2,
   "content_scripts": [{
