@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2014-02-23
+ * @author Ralf Haring 2014-04-15
  */
 
 // all the constants in one place
@@ -15,6 +15,8 @@ var str = {
     instant_mix_auto : 'div[data-type="im"]',
     instant_mix_user : 'div[data-type="st"]',
     im_feeling_lucky : 'div[data-type="imfl"]',
+    suggested_artist : 'div[data-is-radio][data-type="artist"]',
+    suggested_genre : 'div[data-type="expgenres"]',
     small_card_group : 'div.card-group.small:first',
     card_group : 'div.card-group',
     content_pane : 'div.g-content:last-child',
@@ -53,6 +55,12 @@ var add_listeners = function(){
             case 'resize-cards':
                 o['resize_cards'] = this.checked;
                 break;
+            case 'show-suggested-artists':
+                o['suggested_artist'] = this.checked;
+                break;
+            case 'show-suggested-genres':
+                o['suggested_genre'] = this.checked;
+                break;
         }
         storage.set(o);
     });
@@ -85,6 +93,12 @@ var remove_mixes = function(){
             }
             if(obj['im_feeling_lucky'] == false){
                 $(str.im_feeling_lucky).remove();
+            }
+            if(obj['suggested_artist'] == false){
+                $(str.suggested_artist).remove();
+            }
+            if(obj['suggested_genre'] == false){
+                $(str.suggested_genre).remove();
             }
 
             // backup all the cards
@@ -156,15 +170,19 @@ var remove_mixes = function(){
             if(obj['album']){ boxes += ' checked'; }
             boxes += '><label for="show-albums">Albums</label><input id="show-playlists" type="checkbox"';
             if(obj['playlist']){ boxes += ' checked'; }
-            boxes += '><label for="show-playlists">Playlists</label><input id="show-suggested-albums" type="checkbox"';
-            if(obj['suggested_album']){ boxes += ' checked'; }
-            boxes += '><label for="show-suggested-albums">Suggested Albums</label><input id="show-instant-mixes-user" type="checkbox"';
+            boxes += '><label for="show-playlists">Playlists</label><input id="show-instant-mixes-user" type="checkbox"';
             if(obj['instant_mix_user']){ boxes += ' checked'; }
             boxes += '><label for="show-instant-mixes-user">Instant Mixes (User)</label><input id="show-instant-mixes-auto" type="checkbox"';
             if(obj['instant_mix_auto']){ boxes += ' checked'; }
             boxes += '><label for="show-instant-mixes-auto">Instant Mixes (Auto)</label><input id="show-im-feeling-lucky" type="checkbox"';
             if(obj['im_feeling_lucky']){ boxes += ' checked'; }
-            boxes += '><label for="show-im-feeling-lucky">I\'m Feeling Lucky</label></div><span class="settings-button-description">Check off to force all cards to the uniform small size</span><div><input id="resize-cards" type="checkbox"';
+            boxes += '><label for="show-im-feeling-lucky">I\'m Feeling Lucky</label></div><div><input id="show-suggested-albums" type="checkbox"';
+            if(obj['suggested_album']){ boxes += ' checked'; }
+            boxes += '><label for="show-suggested-albums">Suggested Albums</label><input id="show-suggested-artists" type="checkbox"';
+            if(obj['suggested_artist']){ boxes += ' checked'; }
+            boxes += '><label for="show-suggested-artists">Suggested Artists</label><input id="show-suggested-genres" type="checkbox"';
+            if(obj['suggested_genre']){ boxes += ' checked'; }
+            boxes += '><label for="show-suggested-genres">Suggested Genres</label></div><span class="settings-button-description">Check off to force all cards to the uniform small size</span><div><input id="resize-cards" type="checkbox"';
             if(obj['resize_cards']){ boxes += ' checked'; }
             boxes += '><label for="resize-cards">Resize All Cards to be Small</label></div></div></div>';
 
@@ -195,6 +213,10 @@ storage.get(null, function(obj){
         settings['playlist'] = true;
         settings['instant_mix_auto'] = false;
         settings['instant_mix_user'] = true;
+    }
+    if(! obj.hasOwnProperty('suggested_artist')){
+        settings['suggested_artist'] = false;
+        settings['suggested_genre'] = false;
     }
     storage.set(settings);
 });
