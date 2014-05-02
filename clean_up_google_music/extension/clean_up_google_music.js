@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2014-04-15
+ * @author Ralf Haring 2014-05-01
  */
 
 // all the constants in one place
@@ -10,11 +10,11 @@ var str = {
     //album : 'div[data-type="album"]',
     album : 'div[data-type="album"]:not(:contains("Suggested new release"))',
     playlist : 'div[data-type="pl"]',
+    instant_mix_user : 'div[data-type="st"]',
+    instant_mix_auto : 'div[data-type="im"]',
+    im_feeling_lucky : 'div[data-type="imfl"]',
     //suggested_album : 'div[data-type="sal"]',
     suggested_album : 'div[data-type]:contains("Suggested new release")',
-    instant_mix_auto : 'div[data-type="im"]',
-    instant_mix_user : 'div[data-type="st"]',
-    im_feeling_lucky : 'div[data-type="imfl"]',
     suggested_artist : 'div[data-is-radio][data-type="artist"]',
     suggested_genre : 'div[data-type="expgenres"]',
     small_card_group : 'div.card-group.small:first',
@@ -34,32 +34,32 @@ var add_listeners = function(){
     $('#clean-up :checkbox').change(function(){
         var o = {};
         switch(this.id){
-            case 'show-playlists':
-                o['playlist'] = this.checked;
+            case 'show_albums':
+                o['show_albums'] = this.checked;
                 break;
-            case 'show-instant-mixes-auto':
-                o['instant_mix_auto'] = this.checked;
+            case 'show_playlists':
+                o['show_playlists'] = this.checked;
                 break;
-            case 'show-instant-mixes-user':
-                o['instant_mix_user'] = this.checked;
+            case 'show_instant_mixes_user':
+                o['show_instant_mixes_user'] = this.checked;
                 break;
-            case 'show-suggested-albums':
-                o['suggested_album'] = this.checked;
+            case 'show_instant_mixes_auto':
+                o['show_instant_mixes_auto'] = this.checked;
                 break;
-            case 'show-albums':
-                o['album'] = this.checked;
+            case 'show_im_feeling_lucky':
+                o['show_im_feeling_lucky'] = this.checked;
                 break;
-            case 'show-im-feeling-lucky':
-                o['im_feeling_lucky'] = this.checked;
+            case 'show_suggested_albums':
+                o['show_suggested_albums'] = this.checked;
                 break;
-            case 'resize-cards':
+            case 'show_suggested_artists':
+                o['show_suggested_artists'] = this.checked;
+                break;
+            case 'show_suggested_genres':
+                o['show_suggested_genres'] = this.checked;
+                break;
+            case 'resize_cards':
                 o['resize_cards'] = this.checked;
-                break;
-            case 'show-suggested-artists':
-                o['suggested_artist'] = this.checked;
-                break;
-            case 'show-suggested-genres':
-                o['suggested_genre'] = this.checked;
                 break;
         }
         storage.set(o);
@@ -76,28 +76,28 @@ var remove_mixes = function(){
 
         // remove those items the user has unchecked
         storage.get(null, function(obj){
-            if(obj['album'] == false){
+            if(obj['show_albums'] == false){
                 $(str.album).remove();
             }
-            if(obj['playlist'] == false){
+            if(obj['show_playlists'] == false){
                 $(str.playlist).remove();
             }
-            if(obj['instant_mix_auto'] == false){
-                $(str.instant_mix_auto).remove();
-            }
-            if(obj['instant_mix_user'] == false){
+            if(obj['show_instant_mixes_user'] == false){
                 $(str.instant_mix_user).remove();
             }
-            if(obj['suggested_album'] == false){
-                $(str.suggested_album).remove();
+            if(obj['show_instant_mixes_auto'] == false){
+                $(str.instant_mix_auto).remove();
             }
-            if(obj['im_feeling_lucky'] == false){
+            if(obj['show_im_feeling_lucky'] == false){
                 $(str.im_feeling_lucky).remove();
             }
-            if(obj['suggested_artist'] == false){
+            if(obj['show_suggested_albums'] == false){
+                $(str.suggested_album).remove();
+            }
+            if(obj['show_suggested_artists'] == false){
                 $(str.suggested_artist).remove();
             }
-            if(obj['suggested_genre'] == false){
+            if(obj['show_suggested_genres'] == false){
                 $(str.suggested_genre).remove();
             }
 
@@ -112,7 +112,7 @@ var remove_mixes = function(){
             $(str.content_pane).empty();
 
             // deal with the I'm Feeling Lucky container as a one-off first
-            if(obj['im_feeling_lucky'] == true){
+            if(obj['show_im_feeling_lucky'] == true){
                 // pop off the relevant objects
                 var imfl_group = card_groups.shift();
                 var imfl_card = cards.shift();
@@ -164,27 +164,40 @@ var remove_mixes = function(){
 
         storage.get(null, function(obj){
             // clean up header
-            var header = '<div class="settings-cluster settings-clean-up"><div class="header"><div class="title">Clean Up [Instant Mix/Radio Station]</div></div></div>';
+            // create [<div><div><div></div></div></div>]
+            var header = $('<div>', {'class': 'settings-cluster settings-clean-up'})
+                           .append($('<div>', {'class': 'header'})
+                             .append($('<div>', {'class': 'title', text: 'Clean Up [Instant Mix/Radio Station]'})));
+
             // iterate through current settings and set checkbox defaults
-            var boxes = '<div class="settings-section-content" id="clean-up"><div class="buttons-section"><span class="settings-button-description">Check off the card types you wish to see</span><div><input id="show-albums" type="checkbox"';
-            if(obj['album']){ boxes += ' checked'; }
-            boxes += '><label for="show-albums">Albums</label><input id="show-playlists" type="checkbox"';
-            if(obj['playlist']){ boxes += ' checked'; }
-            boxes += '><label for="show-playlists">Playlists</label><input id="show-instant-mixes-user" type="checkbox"';
-            if(obj['instant_mix_user']){ boxes += ' checked'; }
-            boxes += '><label for="show-instant-mixes-user">Instant Mixes (User)</label><input id="show-instant-mixes-auto" type="checkbox"';
-            if(obj['instant_mix_auto']){ boxes += ' checked'; }
-            boxes += '><label for="show-instant-mixes-auto">Instant Mixes (Auto)</label><input id="show-im-feeling-lucky" type="checkbox"';
-            if(obj['im_feeling_lucky']){ boxes += ' checked'; }
-            boxes += '><label for="show-im-feeling-lucky">I\'m Feeling Lucky</label></div><div><input id="show-suggested-albums" type="checkbox"';
-            if(obj['suggested_album']){ boxes += ' checked'; }
-            boxes += '><label for="show-suggested-albums">Suggested Albums</label><input id="show-suggested-artists" type="checkbox"';
-            if(obj['suggested_artist']){ boxes += ' checked'; }
-            boxes += '><label for="show-suggested-artists">Suggested Artists</label><input id="show-suggested-genres" type="checkbox"';
-            if(obj['suggested_genre']){ boxes += ' checked'; }
-            boxes += '><label for="show-suggested-genres">Suggested Genres</label></div><span class="settings-button-description">Check off to force all cards to the uniform small size</span><div><input id="resize-cards" type="checkbox"';
-            if(obj['resize_cards']){ boxes += ' checked'; }
-            boxes += '><label for="resize-cards">Resize All Cards to be Small</label></div></div></div>';
+            // create [<span></span><div><input><label></label><input><label></label>
+            //         <input><label></label><input><label></label><input><label></label></div>]
+            var first_row = $('<span>', {'class': 'settings-button-description', text: 'Check off the card types you wish to see'})
+                              .add($('<div>').append($('<input>', {id: 'show_albums', type: 'checkbox', checked: obj['show_albums']})
+                                .add($('<label>', {'for': 'show_albums', text: 'Albums'}))
+                                .add($('<input>', {id: 'show_playlists', type: 'checkbox', checked: obj['show_playlists']}))
+                                .add($('<label>', {'for': 'show_playlists', text: 'Playlists'}))
+                                .add($('<input>', {id: 'show_instant_mixes_user', type: 'checkbox', checked: obj['show_instant_mixes_user']}))
+                                .add($('<label>', {'for': 'show_instant_mixes_user', text: 'Instant Mixes (User)'}))
+                                .add($('<input>', {id: 'show_instant_mixes_auto', type: 'checkbox', checked: obj['show_instant_mixes_auto']}))
+                                .add($('<label>', {'for': 'show_instant_mixes_auto', text: 'Instant Mixes (Auto)'}))
+                                .add($('<input>', {id: 'show_im_feeling_lucky', type: 'checkbox', checked: obj['show_im_feeling_lucky']}))
+                                .add($('<label>', {'for': 'show_im_feeling_lucky', text: 'I\'m Feeling Lucky'}))));
+            // create [<div><input><label></label><input><label></label><input><label></label></div>]
+            var second_row = $('<div>').append($('<input>', {id: 'show_suggested_albums', type: 'checkbox', checked: obj['show_suggested_albums']})
+                               .add($('<label>', {'for': 'show_suggested_albums', text: 'Suggested Albums'}))
+                               .add($('<input>', {id: 'show_suggested_artists', type: 'checkbox', checked: obj['show_suggested_artists']}))
+                               .add($('<label>', {'for': 'show_suggested_artists', text: 'Suggested Artists'}))
+                               .add($('<input>', {id: 'show_suggested_genres', type: 'checkbox', checked: obj['show_suggested_genres']}))
+                               .add($('<label>', {'for': 'show_suggested_genres', text: 'Suggested Genres'})));
+            // create [<span></span>, <div><input><label></label></div>]
+            var third_row = $('<span>', {'class': 'settings-button-description', text: 'Check off to force all cards to the uniform small size'})
+                              .add($('<div>').append($('<input>', {id: 'resize_cards', type: 'checkbox', checked: obj['resize_cards']})
+                                .add($('<label>', {'for': 'resize_cards', text: 'Resize All Cards to be Small'}))));
+            // create [<div><div></div></div>]
+            var boxes = $('<div>', {'class': 'settings-section-content', id: 'clean-up'})
+                          .append($('<div>', {'class': 'buttons-section'})
+                            .append([first_row, second_row, third_row]));
 
             // find "General" div and insert after
             var first_settings_section = $($(str.settings_view).children()[1]);
@@ -200,25 +213,32 @@ var remove_mixes = function(){
 // check if storage is empty (first time extension runs, ever) and set defaults
 storage.get(null, function(obj){
     var settings = {};
+    var migrate = {album : {new : 'show_albums', default : true},
+                   playlist : {new : 'show_playlists', default : true},
+                   instant_mix_user : {new : 'show_instant_mixes_user', default : true},
+                   instant_mix_auto : {new : 'show_instant_mixes_auto', default : false},
+                   im_feeling_lucky : {new : 'show_im_feeling_lucky', default : true},
+                   suggested_album : {new : 'show_suggested_albums', default : false},
+                   suggested_artist : {new : 'show_suggested_artists', default : false},
+                   suggested_genre : {new : 'show_suggested_genres', default : false},
+                   resize_cards : {new : 'resize_cards', default : true}};
 
-    if(! obj.hasOwnProperty('resize_cards')){
-        settings['resize_cards'] = true;
+    // if a new install or if using old settings
+    if(! obj.hasOwnProperty('show_albums')){
+        // loop through all possible old settings
+        for(key in migrate){
+            if(obj.hasOwnProperty(key)){
+                // if there is a value for the old setting keep the previous value
+                settings[migrate[key]['new']] = obj[key];
+            }else{
+                // otherwise use the default (new installs or if any are missing)
+                settings[migrate[key]['new']] = migrate[key]['default'];
+            }
+        }
+        storage.clear(function(){
+            storage.set(settings);
+        });
     }
-    if(! obj.hasOwnProperty('im_feeling_lucky')){
-        settings['im_feeling_lucky'] = true;
-    }
-    if(! obj.hasOwnProperty('album')){
-        settings['album'] = true;
-        settings['suggested_album'] = false;
-        settings['playlist'] = true;
-        settings['instant_mix_auto'] = false;
-        settings['instant_mix_user'] = true;
-    }
-    if(! obj.hasOwnProperty('suggested_artist')){
-        settings['suggested_artist'] = false;
-        settings['suggested_genre'] = false;
-    }
-    storage.set(settings);
 });
 
 // container for all albums, instant mixes, and playlists
@@ -226,11 +246,15 @@ var album_pane = $('#main')[0];
 // create an observer to delete the instant mixes
 // watch for new children to be added
 var observer = new WebKitMutationObserver(remove_mixes);
-observer.observe(album_pane, {childList : true});
+if(album_pane){
+    observer.observe(album_pane, {childList : true});
+}
 
 // loading progress bar
 var loading_screen = $(str.loading_screen)[0];
 // create an observer to do the initial pass
 // watch for page to finish loading
 var loading_observer = new WebKitMutationObserver(remove_mixes);
-loading_observer.observe(loading_screen, {attributes : true, attributeFilter : ['class']});
+if(loading_screen){
+    loading_observer.observe(loading_screen, {attributes : true, attributeFilter : ['class']});
+}
