@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2014-05-01
+ * @author Ralf Haring 2014-05-11
  */
 
 // all the constants in one place
@@ -17,6 +17,11 @@ var str = {
     suggested_album : 'div[data-type]:contains("Suggested new release")',
     suggested_artist : 'div[data-is-radio][data-type="artist"]',
     suggested_genre : 'div[data-type="expgenres"]',
+    // data-reason="12"  Free from Google
+    // data-reason="2"   Recently Added to My Library
+    // data-reason="3"   Recently played
+    // data-reason="5"   Recently created
+    free_from_google : 'div[data-reason="12"]',
     small_card_group : 'div.card-group.small:first',
     card_group : 'div.card-group',
     content_pane : 'div.g-content:last-child',
@@ -57,6 +62,9 @@ var add_listeners = function(){
                 break;
             case 'show_suggested_genres':
                 o['show_suggested_genres'] = this.checked;
+                break;
+            case 'show_free_from_google':
+                o['show_free_from_google'] = this.checked;
                 break;
             case 'resize_cards':
                 o['resize_cards'] = this.checked;
@@ -99,6 +107,9 @@ var remove_mixes = function(){
             }
             if(obj['show_suggested_genres'] == false){
                 $(str.suggested_genre).remove();
+            }
+            if(obj['show_free_from_google'] == false){
+                $(str.free_from_google).remove();
             }
 
             // backup all the cards
@@ -189,7 +200,9 @@ var remove_mixes = function(){
                                .add($('<input>', {id: 'show_suggested_artists', type: 'checkbox', checked: obj['show_suggested_artists']}))
                                .add($('<label>', {'for': 'show_suggested_artists', text: 'Suggested Artists'}))
                                .add($('<input>', {id: 'show_suggested_genres', type: 'checkbox', checked: obj['show_suggested_genres']}))
-                               .add($('<label>', {'for': 'show_suggested_genres', text: 'Suggested Genres'})));
+                               .add($('<label>', {'for': 'show_suggested_genres', text: 'Suggested Genres'}))
+                               .add($('<input>', {id: 'show_free_from_google', type: 'checkbox', checked: obj['show_free_from_google']}))
+                               .add($('<label>', {'for': 'show_free_from_google', text: 'Free from Google'})));
             // create [<span></span>, <div><input><label></label></div>]
             var third_row = $('<span>', {'class': 'settings-button-description', text: 'Check off to force all cards to the uniform small size'})
                               .add($('<div>').append($('<input>', {id: 'resize_cards', type: 'checkbox', checked: obj['resize_cards']})
@@ -213,15 +226,25 @@ var remove_mixes = function(){
 // check if storage is empty (first time extension runs, ever) and set defaults
 storage.get(null, function(obj){
     var settings = {};
-    var migrate = {album : {new : 'show_albums', default : true},
-                   playlist : {new : 'show_playlists', default : true},
-                   instant_mix_user : {new : 'show_instant_mixes_user', default : true},
-                   instant_mix_auto : {new : 'show_instant_mixes_auto', default : false},
-                   im_feeling_lucky : {new : 'show_im_feeling_lucky', default : true},
-                   suggested_album : {new : 'show_suggested_albums', default : false},
-                   suggested_artist : {new : 'show_suggested_artists', default : false},
-                   suggested_genre : {new : 'show_suggested_genres', default : false},
-                   resize_cards : {new : 'resize_cards', default : true}};
+    var migrate = {album : 'show_albums',
+                   playlist : 'show_playlists',
+                   instant_mix_user : 'show_instant_mixes_user',
+                   instant_mix_auto : 'show_instant_mixes_auto',
+                   im_feeling_lucky : 'show_im_feeling_lucky',
+                   suggested_album : 'show_suggested_albums',
+                   suggested_artist : 'show_suggested_artists',
+                   suggested_genre : 'show_suggested_genres',
+                   resize_cards : 'resize_cards'};
+    var defaults = {show_albums : true,
+                    show_playlists : true,
+                    show_instant_mixes_user : true,
+                    show_instant_mixes_auto : false,
+                    show_im_feeling_lucky : true,
+                    show_suggested_albums : false,
+                    show_suggested_artists : false,
+                    show_suggested_genres : false,
+                    show_free_from_google : true,
+                    resize_cards : true};
 
     // if a new install or if using old settings
     if(! obj.hasOwnProperty('show_albums')){
@@ -229,15 +252,24 @@ storage.get(null, function(obj){
         for(key in migrate){
             if(obj.hasOwnProperty(key)){
                 // if there is a value for the old setting keep the previous value
-                settings[migrate[key]['new']] = obj[key];
+                settings[migrate[key]] = obj[key];
             }else{
                 // otherwise use the default (new installs or if any are missing)
-                settings[migrate[key]['new']] = migrate[key]['default'];
+                settings[migrate[key]] = defaults[migrate[key]];
             }
         }
         storage.clear(function(){
             storage.set(settings);
         });
+    }else{
+        // loop through all possible new settings
+        for(key in defaults){
+            // if any don't exist, add their default setting
+            if(! obj.hasOwnProperty(key)){
+                settings[key] = defaults[key];
+            }
+        }
+        storage.set(settings);
     }
 });
 
