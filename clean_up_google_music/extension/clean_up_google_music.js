@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2014-06-11
+ * @author Ralf Haring 2014-06-17
  */
 
 // all the constants in one place
@@ -292,14 +292,17 @@ storage.get(null, function(obj){
     }
 });
 
+// observers to watch for the settings page and the periodic refreshes
 var settings_observer = new WebKitMutationObserver(remove_mixes);
 var refresh_observer = new WebKitMutationObserver(remove_mixes);
-
-// loading progress bar
-var loading_screen = $(str.loading_screen)[0];
 // create an observer to do the initial pass
-// watch for page to finish loading
 var loading_observer = new WebKitMutationObserver(remove_mixes);
-if(loading_screen){
-    loading_observer.observe(loading_screen, {attributes : true, attributeFilter : ['style']});
-}
+
+// use jquery's load bind method. others trigger too early, before the loading screen appears.
+$(window).load(function(){
+    // loading progress bar
+    var loading_screen = $(str.loading_screen)[0];
+    if(loading_screen){
+        loading_observer.observe(loading_screen, {attributes : true, attributeFilter : ['style']});
+    }
+});
