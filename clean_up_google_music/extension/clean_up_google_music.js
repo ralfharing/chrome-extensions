@@ -196,7 +196,7 @@ var bind_observers = function(mutations){
     }
     //console.log('loading');
     filter_cards(mutations);
-}
+};
 
 // if the settings page is opened, insert clean up settings
 // between the two "General" and "Manage My Devices" sections
@@ -251,7 +251,7 @@ var show_settings = function(){
         // if done immediately, listeners weren't binding correctly.
         setTimeout(add_listeners, 1000);
     }
-}
+};
 
 // check if storage is empty (first time extension runs, ever) and set defaults
 storage.get(null, function(obj){
