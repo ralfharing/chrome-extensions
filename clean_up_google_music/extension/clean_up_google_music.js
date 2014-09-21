@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2014-09-20
+ * @author Ralf Haring 2014-09-21
  */
 
 // all the selectors in one place
@@ -85,118 +85,124 @@ var add_listeners = function(){
 };
 
 // does the work
-var remove_mixes = function(mutations){
-    // after the loading screen finishes, the structure is there for the other
-    // observers to attach to
-    if(this == loading_observer){
-        // outer container for the content pane, for monitoring if the settings
-        // page is displayed
-        var album_pane = $(selector.album_pane)[0];
-        if(album_pane){
-            settings_observer.observe(album_pane, {childList : true, subtree : true});
-        }
-        // inner container for the content pane, for monitoring if the album
-        // cards are reinserted or otherwise refreshed
-        var album_inner_pane = $(selector.album_inner_pane)[0];
-        if(album_inner_pane){
-            refresh_observer.observe(album_inner_pane, {childList : true});
-        }
-        //console.log('loading');
-    }
-
+var filter_cards = function(mutations){
     // for debugging
     //if(this == refresh_observer && mutations[0].addedNodes.length == 1 &&
     //   mutations[0].addedNodes[0].className == 'cards' && $(selector.card).length > 1){
     //    console.log('refresh');
     //}
-    //if(this == settings_observer && $(selector.footer).length == 1){
-    //    console.log('settings');
-    //}
 
-    // modify the cards if the initial loading just finished or if the inner album
-    // content pane was modified, the pane of cards was reinserted, and there is
-    // more than one card
-    if(this == loading_observer ||
-       (this == refresh_observer && mutations[0].addedNodes.length == 1 &&
+    // bump out when the page refreshes and any of the following aren't true:
+    // - exactly one new card was added
+    // - there is more than one existing card
+    // - the listen now page is the one being displayed
+    // if all of those *are* true or if the initial loading screen observer
+    // was the one calling this handler, proceed to filtering the cards
+    if(this == refresh_observer && !(mutations[0].addedNodes.length == 1 &&
         mutations[0].addedNodes[0].className == 'cards' && $(selector.card).length > 1 &&
         $(selector.listen_now).hasClass('selected'))){
-        // change all large cards to small
-        $(selector.card).attr('data-size', 'small');
+        return;
+    }
 
-        // remove those items the user has unchecked
-        storage.get(null, function(obj){
-            $(selector.album).attr('keep', obj['show_albums'].toString());
-            $(selector.playlist).attr('keep', obj['show_playlists'].toString());
-            $(selector.instant_mix_user).attr('keep', obj['show_instant_mixes_user'].toString());
-            $(selector.instant_mix_auto).attr('keep', obj['show_instant_mixes_auto'].toString());
-            $(selector.im_feeling_lucky).attr('keep', obj['show_im_feeling_lucky'].toString());
-            $(selector.suggested_album).attr('keep', obj['show_suggested_albums'].toString());
-            $(selector.suggested_artist).attr('keep', obj['show_suggested_artists'].toString());
-            $(selector.suggested_genre).attr('keep', obj['show_suggested_genres'].toString());
-            $(selector.free_from_google).attr('keep', obj['show_free_from_google'].toString());
-            $(selector.keep_false).remove();
+    // change all large cards to small
+    $(selector.card).attr('data-size', 'small');
 
-            // backup all the cards
-            var cards = $(selector.card).toArray();
-            // backup a small empty container and change dimensions to hold one album each
-            var small_card_group = $(selector.small_card_group).clone();
-            $(small_card_group).empty().css('height', '255px');
-            // backup clean copies of all existing containers
-            var card_groups = $(selector.card_group).empty().toArray();
-            // flush everything that exists
-            $(selector.content_pane).empty();
+    // remove those items the user has unchecked
+    storage.get(null, function(obj){
+        $(selector.album).attr('keep', obj['show_albums'].toString());
+        $(selector.playlist).attr('keep', obj['show_playlists'].toString());
+        $(selector.instant_mix_user).attr('keep', obj['show_instant_mixes_user'].toString());
+        $(selector.instant_mix_auto).attr('keep', obj['show_instant_mixes_auto'].toString());
+        $(selector.im_feeling_lucky).attr('keep', obj['show_im_feeling_lucky'].toString());
+        $(selector.suggested_album).attr('keep', obj['show_suggested_albums'].toString());
+        $(selector.suggested_artist).attr('keep', obj['show_suggested_artists'].toString());
+        $(selector.suggested_genre).attr('keep', obj['show_suggested_genres'].toString());
+        $(selector.free_from_google).attr('keep', obj['show_free_from_google'].toString());
+        $(selector.keep_false).remove();
 
-            // deal with the I'm Feeling Lucky container as a one-off first
-            if(obj['show_im_feeling_lucky'] == true){
-                // pop off the relevant objects
-                var imfl_group = card_groups.shift();
-                var imfl_card = cards.shift();
-                var card1 = cards.shift();
+        // backup all the cards
+        var cards = $(selector.card).toArray();
+        // backup a small empty container and change dimensions to hold one album each
+        var small_card_group = $(selector.small_card_group).clone();
+        $(small_card_group).empty().css('height', '255px');
+        // backup clean copies of all existing containers
+        var card_groups = $(selector.card_group).empty().toArray();
+        // flush everything that exists
+        $(selector.content_pane).empty();
 
-                // if cards are also to be smallified, pop off one more card.
-                // then fix all the attributes as appropriate and append.
-                if(obj['resize_cards'] == true){
-                    $(card1).css('height', '160px');
-                    var card2 = $(cards.shift()).css('height', '160px');
-                    $(imfl_group).css('height', '255px').append(imfl_card).append(card1).append(card2).appendTo(selector.content_pane);
-                }else{
-                    $(card1).attr('data-size', 'large');
-                    $(imfl_group).append(imfl_card).append(card1).appendTo(selector.content_pane);
-                }
-            }else{
-                // chop off the ifl-group class for the case where we don't want to show it
-                // and we don't want to smallify the cards. (if smallifying, the card_groups
-                // array is ignored)
-                $(card_groups[0]).removeClass('ifl-group');
-            }
+        // deal with the I'm Feeling Lucky container as a one-off first
+        if(obj['show_im_feeling_lucky'] == true){
+            // pop off the relevant objects
+            var imfl_group = card_groups.shift();
+            var imfl_card = cards.shift();
+            var card1 = cards.shift();
 
-            // loop through different arrays depending on whether cards should be smallified.
-            // if yes, for each card wrap a small card group around it and append.
-            // else, for each existing card group, pop off relevant cards and fix them, then append.
+            // if cards are also to be smallified, pop off one more card.
+            // then fix all the attributes as appropriate and append.
             if(obj['resize_cards'] == true){
-                while(cards.length > 0){
-                    small_card_group.clone().append(cards.shift()).appendTo(selector.content_pane);
-                }
+                $(card1).css('height', '160px');
+                var card2 = $(cards.shift()).css('height', '160px');
+                $(imfl_group).css('height', '255px').append(imfl_card).append(card1).append(card2).appendTo(selector.content_pane);
             }else{
-                while(card_groups.length > 0){
-                    // don't bother looping through all groups if no cards left
-                    if(cards.length == 0) break;
-                    var card_group = card_groups.shift();
-                    var card1 = cards.shift();
-                    if($(card_group).attr('data-size') == 'large'){
-                        $(card1).attr('data-size', 'large');
-                        $(card_group).append(card1).appendTo(selector.content_pane);
-                    }else{
-                        var card2 = cards.shift();
-                        $(card_group).append(card1).append(card2).appendTo(selector.content_pane);
-                    }
+                $(card1).attr('data-size', 'large');
+                $(imfl_group).append(imfl_card).append(card1).appendTo(selector.content_pane);
+            }
+        }else{
+            // chop off the ifl-group class for the case where we don't want to show it
+            // and we don't want to smallify the cards. (if smallifying, the card_groups
+            // array is ignored)
+            $(card_groups[0]).removeClass('ifl-group');
+        }
+
+        // loop through different arrays depending on whether cards should be smallified.
+        // if yes, for each card wrap a small card group around it and append.
+        // else, for each existing card group, pop off relevant cards and fix them, then append.
+        if(obj['resize_cards'] == true){
+            while(cards.length > 0){
+                small_card_group.clone().append(cards.shift()).appendTo(selector.content_pane);
+            }
+        }else{
+            while(card_groups.length > 0){
+                // don't bother looping through all groups if no cards left
+                if(cards.length == 0) break;
+                var card_group = card_groups.shift();
+                var card1 = cards.shift();
+                if($(card_group).attr('data-size') == 'large'){
+                    $(card1).attr('data-size', 'large');
+                    $(card_group).append(card1).appendTo(selector.content_pane);
+                }else{
+                    var card2 = cards.shift();
+                    $(card_group).append(card1).append(card2).appendTo(selector.content_pane);
                 }
             }
-        });
-    }else if(this == settings_observer && $(selector.footer).length == 1 && $(selector.clean_up_section).length == 0){
-        // if the settings page is opened, insert clean up settings
-        // between the two "General" and "Manage My Devices" sections
+        }
+    });
+};
 
+// after the loading screen finishes, the structure is there for the other
+// observers to attach to
+var bind_observers = function(mutations){
+    // outer container for the content pane, for monitoring if the settings
+    // page is displayed
+    var album_pane = $(selector.album_pane)[0];
+    if(album_pane){
+        settings_observer.observe(album_pane, {childList : true, subtree : true});
+    }
+    // inner container for the content pane, for monitoring if the album
+    // cards are reinserted or otherwise refreshed
+    var album_inner_pane = $(selector.album_inner_pane)[0];
+    if(album_inner_pane){
+        refresh_observer.observe(album_inner_pane, {childList : true});
+    }
+    //console.log('loading');
+    filter_cards(mutations);
+}
+
+// if the settings page is opened, insert clean up settings
+// between the two "General" and "Manage My Devices" sections
+var show_settings = function(){
+    //console.log('settings');
+    if($(selector.footer).length == 1 && $(selector.clean_up_section).length == 0){
         storage.get(null, function(obj){
             // clean up header
             // create [<div><div><div></div></div></div>]
@@ -245,7 +251,7 @@ var remove_mixes = function(mutations){
         // if done immediately, listeners weren't binding correctly.
         setTimeout(add_listeners, 1000);
     }
-};
+}
 
 // check if storage is empty (first time extension runs, ever) and set defaults
 storage.get(null, function(obj){
@@ -298,10 +304,10 @@ storage.get(null, function(obj){
 });
 
 // observers to watch for the settings page and the periodic refreshes
-var settings_observer = new WebKitMutationObserver(remove_mixes);
-var refresh_observer = new WebKitMutationObserver(remove_mixes);
+var settings_observer = new WebKitMutationObserver(show_settings);
+var refresh_observer = new WebKitMutationObserver(filter_cards);
 // create an observer to do the initial pass
-var loading_observer = new WebKitMutationObserver(remove_mixes);
+var loading_observer = new WebKitMutationObserver(bind_observers);
 
 // use jquery's load bind method. others trigger too early, before the loading screen appears.
 $(window).load(function(){
