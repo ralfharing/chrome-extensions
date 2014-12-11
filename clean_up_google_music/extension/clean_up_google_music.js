@@ -41,7 +41,8 @@ var selector = {
     album_inner_pane : '.g-content',
     clean_up_section : '#clean-up',
     clean_up_checkboxes : '#clean-up :checkbox',
-    all_access : '#music-banner-subtitle'
+    explore_menu : '#explore-nav',
+    shop_menu : '#shop-nav'
 };
 
 // for user configurations, use sync storage for multiple chrome installs
@@ -99,7 +100,7 @@ var filter_cards = function(mutations){
     //}
 
     // the all access Listen Now page is structured differently
-    var is_all_access = $(selector.all_access).text() == 'All Access';
+    var is_all_access = $(selector.explore_menu).length == 1;
 
     if(this == refresh_observer){
         if(is_all_access == true && !(mutations[0].addedNodes.length == 4 &&
