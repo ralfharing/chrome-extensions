@@ -1,6 +1,6 @@
 {
   "name": "G+ Show All Pages",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "The G+ account button is only tall enough to show three of a user's pages. It's height should be increased to show more.",
   "manifest_version": 2,
   "content_scripts": [
