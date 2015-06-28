@@ -1,5 +1,5 @@
 /**
- * @author Ralf Haring 2015-05-31
+ * @author Ralf Haring 2015-06-28
  */
 
 // all the selectors in one place
@@ -8,15 +8,17 @@ var selector = {
     album_inner_pane : '.g-content',
     situations : '.situations-container',
     containers : '.cluster-text-protection',
-    last_child : ':last-child',
-    lane_content : '.lane-content'
+    lane_content : '.lane-content',
+    recommended : '.recommended-header',
+    subscribe : '.ups.light'
 };
 
 // quick and simple rules to modify the layout
 var modify_layout = function(){
     if($(selector.containers).length > 1){
         $(selector.situations).remove();
-        $(selector.containers + selector.last_child).remove();
+        $(selector.recommended).parent().remove();
+        $(selector.subscribe).remove();
         $(selector.lane_content).css('white-space', 'normal');
     }
 };
@@ -44,5 +46,8 @@ $(window).load(function(){
     var loading_screen = $(selector.loading_screen)[0];
     if(loading_screen){
         loading_observer.observe(loading_screen, {attributes : true, attributeFilter : ['style']});
+    }else{
+        // sometimes the page loads faster, then skip straight to the removal step
+        bind_observers();
     }
 });
