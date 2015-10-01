@@ -1,13 +1,13 @@
 /**
- * @author Ralf Haring 2015-06-28
+ * @author Ralf Haring 2015-09-30
  */
 
 // all the selectors in one place
 var selector = {
     loading_screen : '#loading-progress',
     album_inner_pane : '.g-content',
-    situations : '.situations-container',
-    containers : '.cluster-text-protection',
+    situations : 'div.cluster[data-type="situations"]',
+    containers : 'div.material-cluster',
     lane_content : '.lane-content',
     recommended : '.recommended-header',
     subscribe : '.ups.light'
